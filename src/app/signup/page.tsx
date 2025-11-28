@@ -8,7 +8,7 @@ const Signup = () => {
   return (
     <div>
       {step == 1 ? <Welcome nextStep={setStep} /> : 
-        <RegisterForm/>
+        <RegisterForm nextStep={setStep} />
       }
       
     </div>
