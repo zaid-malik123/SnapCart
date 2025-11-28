@@ -13,6 +13,7 @@ import { FcGoogle } from "react-icons/fc";
 import axios from "axios";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 
 type propType = {
   nextStep: (s: number) => void;
@@ -148,7 +149,7 @@ const RegisterForm = ({ nextStep }: propType) => {
           <span className="flex-1 h-px bg-gray-200"></span>
         </div>
        
-       <button className="w-full flex items-center justify-center gap-3 border border-gray-300 hover:bg-gray-50 py-3 rounded-xl text-gray-700 font-medium transition-all duration-200">
+       <button onClick={() => signIn("google")} className="w-full flex items-center justify-center gap-3 border border-gray-300 hover:bg-gray-50 py-3 rounded-xl text-gray-700 font-medium transition-all duration-200">
         <FcGoogle size={30} />
         Continue with Google
        </button>

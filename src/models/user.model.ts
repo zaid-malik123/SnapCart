@@ -4,11 +4,12 @@ interface userI{
     _id?: mongoose.Types.ObjectId,
     name: string,
     email: string,
-    password: string,
+    password?: string,
     mobile?: string,
     role: "user" | "deliveryBoy" | "admin",
     createdAt?: Date,
-    updatedAt?: Date
+    updatedAt?: Date,
+    image?: string
 }
 
 const userSchema = new mongoose.Schema<userI>({
@@ -28,12 +29,14 @@ const userSchema = new mongoose.Schema<userI>({
     },
     password: {
         type: String,
-        required: true
     },
     role: {
         type: String,
         enum: ["user", "deliveryBoy", "admin"],
         default: "user"
+    },
+    image: {
+        type: String
     }
 
 },{timestamps:true})
