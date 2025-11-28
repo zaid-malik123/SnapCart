@@ -11,6 +11,8 @@ import { motion } from "motion/react";
 import { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import axios from "axios";
+import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 type propType = {
   nextStep: (s: number) => void;
@@ -21,13 +23,17 @@ const RegisterForm = ({ nextStep }: propType) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const router = useRouter()
 
   const handleSignup = async (e: React.FormEvent) => {
+   setLoading(true) 
    e.preventDefault() 
   try {
     const res = await axios.post("/api/auth/register", {name, email, password})
-    console.log(res.data)
+    setLoading(false)
   } catch (error) {
+    setLoading(false)
     console.log(error)
   }
   }
@@ -127,11 +133,11 @@ const RegisterForm = ({ nextStep }: propType) => {
         {
           (() => {
             const formValidation = name != "" && email != "" && password != ""
-             return <button disabled={!formValidation} className= {`w-full font-semibold py-3 rounded-xl transition-all duration-200 shadow-md inline-flex items-center justify-center gap-2 ${
+             return <button disabled={!formValidation || loading} className= {`w-full font-semibold py-3 rounded-xl transition-all duration-200 shadow-md inline-flex items-center justify-center gap-2 ${
               formValidation? "bg-green-600 hover:bg-green-700 text-white":
               "bg-gray-300 text-gray-500 cursor-not-allowed"
              }`}>
-                 SignUp
+                 {loading ? <Loader2 className="w-5 h-5 animate-spin"/> : "SignUp"}
              </button>
           })()
         }
@@ -147,7 +153,7 @@ const RegisterForm = ({ nextStep }: propType) => {
         Continue with Google
        </button>
 
-       <p className="text-gray-600 mt-6 text-sm flex items-center justify-center gap-1 cursor-pointer">Already have an account ? <span className="text-green-600"><LogIn/></span></p>
+       <p onClick={() => router.push("/login")} className="text-gray-600 mt-6 text-sm flex items-center justify-center gap-1 cursor-pointer">Already have an account ? <span className="text-green-600"><LogIn/></span></p>
         
       </motion.form>
     </div>
