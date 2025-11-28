@@ -3,11 +3,14 @@ import { Leaf } from "lucide-react";
 import { User } from "lucide-react";
 import { Lock } from "lucide-react";
 import { EyeIcon } from "lucide-react";
+import { LogIn } from "lucide-react";
 import { EyeOff } from "lucide-react";
 import { Mail } from "lucide-react";
 import { ArrowLeft } from "lucide-react";
 import { motion } from "motion/react";
 import { useState } from "react";
+import { FcGoogle } from "react-icons/fc";
+import axios from "axios";
 
 type propType = {
   nextStep: (s: number) => void;
@@ -18,6 +21,16 @@ const RegisterForm = ({ nextStep }: propType) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false)
+
+  const handleSignup = async (e: React.FormEvent) => {
+   e.preventDefault() 
+  try {
+    const res = await axios.post("/api/auth/register", {name, email, password})
+    console.log(res.data)
+  } catch (error) {
+    console.log(error)
+  }
+  }
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen px-6 py-10 bg-white relative">
@@ -61,7 +74,7 @@ const RegisterForm = ({ nextStep }: propType) => {
         Join Snapcart today <Leaf className="w-5 h-5 text-green-600" />
       </motion.p>
 
-      <motion.form
+      <motion.form onSubmit={handleSignup}
         initial={{
           opacity: 0,
         }}
@@ -110,6 +123,32 @@ const RegisterForm = ({ nextStep }: propType) => {
             showPassword ? <EyeOff onClick={() => setShowPassword(false)} className= "absolute right-3 top-3.5 w-5 h-5 text-gray-500 cursor-pointer" /> : <EyeIcon onClick={() => setShowPassword(true)}  className= "absolute right-3 top-3.5 w-5 h-5 text-gray-500 cursor-pointer"/>
           }
         </div>
+
+        {
+          (() => {
+            const formValidation = name != "" && email != "" && password != ""
+             return <button disabled={!formValidation} className= {`w-full font-semibold py-3 rounded-xl transition-all duration-200 shadow-md inline-flex items-center justify-center gap-2 ${
+              formValidation? "bg-green-600 hover:bg-green-700 text-white":
+              "bg-gray-300 text-gray-500 cursor-not-allowed"
+             }`}>
+                 SignUp
+             </button>
+          })()
+        }
+
+        <div className="flex items-center text-gray-400 text-sm mt-2 gap-2">
+          <span className="flex-1 h-px bg-gray-200"></span>
+           OR
+          <span className="flex-1 h-px bg-gray-200"></span>
+        </div>
+       
+       <button className="w-full flex items-center justify-center gap-3 border border-gray-300 hover:bg-gray-50 py-3 rounded-xl text-gray-700 font-medium transition-all duration-200">
+        <FcGoogle size={30} />
+        Continue with Google
+       </button>
+
+       <p className="text-gray-600 mt-6 text-sm flex items-center justify-center gap-1 cursor-pointer">Already have an account ? <span className="text-green-600"><LogIn/></span></p>
+        
       </motion.form>
     </div>
   );
