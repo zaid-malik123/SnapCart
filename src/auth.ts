@@ -52,7 +52,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     async signIn({user, account}){
       if(account?.provider == "google"){
         await connectDb()
-
+      
         var existUser = await User.findOne({email: user.email})
 
         if(!existUser){
