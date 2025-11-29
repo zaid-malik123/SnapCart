@@ -35,6 +35,7 @@ const Login = () => {
       password,
 
     })
+    router.push("/")
     setLoading(false)
   } catch (error) {
     console.log(error)
