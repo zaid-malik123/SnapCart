@@ -6,6 +6,7 @@ import { ArrowRight } from "lucide-react";
 import { User } from "lucide-react";
 import { motion } from "motion/react";
 import { redirect } from "next/navigation";
+import { useRouter } from "next/router";
 import { useState } from "react";
 
 const EditRoleMobile = () => {
@@ -29,12 +30,13 @@ const EditRoleMobile = () => {
 
   const [selected, setSelected] = useState("")
   const [mobile, setMobile] = useState("")
+  const router = useRouter()
 
 
   const handleEdit = async () => {
     try {
         const res = await axios.post("/api/user/edit-role-mobile", {role: selected, mobile})
-        redirect("/")
+        router.push("/")
     } catch (error) {
         console.log(error)
     }
@@ -70,12 +72,12 @@ const EditRoleMobile = () => {
                     scale: 0.94
                   }}
                   onClick={() => setSelected(role.id)}
-                  className= {`flex flex-col items-center justify-center w-48 h-44 rounded-2xl border-2 transition-all ${
+                  className= {`flex flex-col items-center justify-center w-48 h-44 rounded-2xl border-2 gap-2 transition-all ${
                     isSelected ? "border-green-600 bg-green-100 shadow-lg"
                     : "border-gray-300 bg-white hover:border-green-600"
                   }`}>
                   <Icon/>
-                  <span>role.label</span>
+                  <span className="">{role.lable}</span>
                 </motion.div>
             )
         })}

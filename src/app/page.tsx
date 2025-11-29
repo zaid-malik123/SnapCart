@@ -1,5 +1,6 @@
 import { auth } from '@/auth'
 import EditRoleMobile from '@/components/EditRoleMobile'
+import Nav from '@/components/Nav'
 import { connectDb } from '@/db/db'
 import User from '@/models/user.model'
 import { redirect } from 'next/navigation'
@@ -18,7 +19,9 @@ const page = async () => {
     return <EditRoleMobile/>
   }
   return (
-    <div>page</div>
+    <>
+      <Nav user={user}/>
+    </>
   )
 }
 
