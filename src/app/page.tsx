@@ -18,9 +18,11 @@ const page = async () => {
   if(userDetails){
     return <EditRoleMobile/>
   }
+
+  const plainUser = JSON.parse(JSON.stringify(user))
   return (
     <>
-      <Nav user={user}/>
+      <Nav user={plainUser}/>
     </>
   )
 }
