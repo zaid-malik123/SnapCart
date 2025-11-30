@@ -10,7 +10,6 @@ import { AnimatePresence, motion } from "motion/react";
 import { Package } from "lucide-react";
 import { LogOut } from "lucide-react";
 import { signOut } from "next-auth/react";
-import { Cross } from "lucide-react";
 import { X } from "lucide-react";
 
 interface userI {

@@ -1,6 +1,9 @@
 import { auth } from '@/auth'
+import AdminDashBoard from '@/components/AdminDashBoard'
+import DeliveryBoyDashBoard from '@/components/DeliveryBoyDashBoard'
 import EditRoleMobile from '@/components/EditRoleMobile'
 import Nav from '@/components/Nav'
+import UserDashBoard from '@/components/UserDashBoard'
 import { connectDb } from '@/db/db'
 import User from '@/models/user.model'
 import { redirect } from 'next/navigation'
@@ -23,6 +26,14 @@ const page = async () => {
   return (
     <>
       <Nav user={plainUser}/>
+      {user.role == "user" ? (
+        <UserDashBoard/>
+      ):
+      user.role == "admin" ? (
+        <AdminDashBoard/>
+      ):
+      <DeliveryBoyDashBoard/>   
+    }
     </>
   )
 }
