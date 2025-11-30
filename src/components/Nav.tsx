@@ -11,6 +11,11 @@ import { Package } from "lucide-react";
 import { LogOut } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { X } from "lucide-react";
+import { Plus } from "lucide-react";
+import { Boxes } from "lucide-react";
+import { ClipboardCheck } from "lucide-react";
+import { createPortal } from "react-dom";
+import { Menu } from "lucide-react";
 
 interface userI {
   _id?: mongoose.Types.ObjectId;
@@ -28,6 +33,7 @@ const Nav = ({ user }: { user: userI }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchBarOpen, setSearchOpen] = useState(false);
   const profileDropDown = useRef<HTMLDivElement>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -42,6 +48,99 @@ const Nav = ({ user }: { user: userI }) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const sideBar = menuOpen
+    ? createPortal(
+        <AnimatePresence>
+          <motion.div
+            initial={{
+              x: -100,
+              opacity: 0,
+            }}
+            animate={{
+              x: 0,
+              opacity: 1,
+            }}
+            exit={{
+              x: -100,
+              opacity: 0,
+            }}
+            transition={{
+              type: "spring",
+              stiffness: 100,
+              damping: 14,
+            }}
+            className="fixed top-0 left-0 h-full w-[75%] sm:w-[60%] z-999 bg-linear-to-b from-green-800/90 via-green-700/80 to-green-900/90 backdrop-blur-2xl border-r border-green-400/20 shadow-[0_0_50px_-10px_rgba(0,255,100, 0.3)] flex flex-col p-6 text-white"
+          >
+            <div className="flex justify-between items-center mb-2">
+              <h1 className="font-extrabold text-2xl tracking-wide text-white/90">
+                Admin Panel
+              </h1>
+              <button
+                onClick={() => setMenuOpen(false)}
+                className="text-white/80 hover:text-red-400 text-2xl font-semibold transition-all"
+              >
+                <X />
+              </button>
+            </div>
+
+            <div className="flex items-center gap-3 p-3 mt-3 rounded-xl bg-white/10 hover:bg-white/150 transition-all shadow-inner">
+              <div className="relative w-12 h-12 rounded-full overflow-hidden border-2">
+                {user.image ? (
+                  <Image
+                    className="object-cover rounded-full"
+                    src={user.image}
+                    alt="user"
+                    fill
+                  />
+                ) : (
+                  <User />
+                )}
+              </div>
+              <div>
+                <h2 className="text-lg font-semibold text-white">
+                  {user.name}
+                </h2>
+                <p className="text-xs text-green-200 capitalize tracking-wide">
+                  {user.role}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-3 font-medium mt-6">
+              <Link
+                className="flex items-center gap-3 p-3 rounded-lg bg-white/10 hover:bg-white/20 hover:pl-4 transition-all"
+                href={""}
+              >
+                <Plus className="w-5 h-5" />
+                Add Grocery
+              </Link>
+              <Link
+                className="flex items-center gap-3 p-3 rounded-lg bg-white/10 hover:bg-white/20 hover:pl-4 transition-all"
+                href={""}
+              >
+                <Boxes className="w-5 h-5" /> View Grocery
+              </Link>
+              <Link
+                className="flex items-center gap-3 p-3 rounded-lg bg-white/10 hover:bg-white/20 hover:pl-4 transition-all"
+                href={""}
+              >
+                <ClipboardCheck className="w-5 h-5" /> Manage Orders
+              </Link>
+            </div>
+
+            <div className="my-5 border-t border-white/20">
+            </div>
+
+            <div onClick={async () => await signOut({callbackUrl: "/"})} className="flex items-center gap-3 text-red-400 font-semibold mt-auto hover:bg-red-500/20 p-3 rounded-lg transition-all">
+              <LogOut className="w-5 h-5 text-red-400"/>
+              Log Out
+            </div>
+          </motion.div>
+        </AnimatePresence>,
+        document.body
+      )
+    : null;
+
   return (
     <div className="w-[95%] fixed top-4 left-1/2 -translate-x-1/2 bg-linear-to-r from-green-500 to-green-700 rounded-2xl shadow-lg shadow-black/30 flex justify-between items-center h-20 px-4 md:px-8 z-50">
       <Link
@@ -51,32 +150,70 @@ const Nav = ({ user }: { user: userI }) => {
         snapcart
       </Link>
 
-      <form className="hidden md:flex items-center bg-white rounded-full px-4 py-2 w-1/2 max-w-lg shadow-md">
-        <Search className="text-gray-500 w-5 h-5 mr-2" />
-        <input
-          className="w-full outline-0 text-gray-700 placeholder-gray-400"
-          type="text"
-          placeholder="Search groceries"
-        />
-      </form>
+      {user.role == "user" && (
+        <form className="hidden md:flex items-center bg-white rounded-full px-4 py-2 w-1/2 max-w-lg shadow-md">
+          <Search className="text-gray-500 w-5 h-5 mr-2" />
+          <input
+            className="w-full outline-0 text-gray-700 placeholder-gray-400"
+            type="text"
+            placeholder="Search groceries"
+          />
+        </form>
+      )}
 
       <div className="flex items-center gap-3 md:gap-6 relative">
-        <div
-          onClick={() => setSearchOpen((prev) => !prev)}
-          className="flex md:hidden items-center justify-center shadow-md hover:scale-105 transition relative bg-white rounded-full w-11 h-11"
-        >
-          <Search className="text-green-600 w-6 h-6" />
-        </div>
+        {user.role == "user" && (
+          <>
+            <div
+              onClick={() => setSearchOpen((prev) => !prev)}
+              className="flex md:hidden items-center justify-center shadow-md hover:scale-105 transition relative bg-white rounded-full w-11 h-11"
+            >
+              <Search className="text-green-600 w-6 h-6" />
+            </div>
 
-        <Link
-          className="flex items-center justify-center shadow-md hover:scale-105 transition relative bg-white rounded-full w-11 h-11"
-          href={""}
-        >
-          <ShoppingCartIcon />
-          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full font-semibold shadow">
-            0
-          </span>
-        </Link>
+            <Link
+              className="flex items-center justify-center shadow-md hover:scale-105 transition relative bg-white rounded-full w-11 h-11"
+              href={""}
+            >
+              <ShoppingCartIcon />
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full font-semibold shadow">
+                0
+              </span>
+            </Link>
+          </>
+        )}
+
+        {user.role == "admin" && (
+          <>
+            <div className="hidden md:flex items-center gap-4">
+              <Link
+                className="flex items-center gap-2 bg-white text-green-700 font-semibold px-4 py-2 rounded-full hover:bg-green-100 transition-all"
+                href={""}
+              >
+                <Plus className="w-5 h-5" />
+                Add Grocery
+              </Link>
+              <Link
+                className="flex items-center gap-2 bg-white text-green-700 font-semibold px-4 py-2 rounded-full hover:bg-green-100 transition-all"
+                href={""}
+              >
+                <Boxes className="w-5 h-5" /> View Grocery
+              </Link>
+              <Link
+                className="flex items-center gap-2 bg-white text-green-700 font-semibold px-4 py-2 rounded-full hover:bg-green-100 transition-all"
+                href={""}
+              >
+                <ClipboardCheck className="w-5 h-5" /> Manage Orders
+              </Link>
+            </div>
+            <div
+              onClick={() => setMenuOpen((prev) => !prev)}
+              className="md:hidden bg-white rounded-full w-10 h-10 flex items-center justify-center shadow-md"
+            >
+              <Menu clasName="w-6 h-6 text-green-600" />
+            </div>
+          </>
+        )}
 
         <div ref={profileDropDown} className="relative">
           <div
@@ -142,14 +279,16 @@ const Nav = ({ user }: { user: userI }) => {
                   </div>
                 </div>
 
-                <Link
-                  onClick={() => setIsOpen(false)}
-                  className="flex items-center gap-2 px-3 py-3 hover:bg-green-50 rounded-lg text-gray-700 font-medium"
-                  href={""}
-                >
-                  <Package className="w-5 h-5 text-green-600" />
-                  My Orders
-                </Link>
+                {user.role == "user" && (
+                  <Link
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center gap-2 px-3 py-3 hover:bg-green-50 rounded-lg text-gray-700 font-medium"
+                    href={""}
+                  >
+                    <Package className="w-5 h-5 text-green-600" />
+                    My Orders
+                  </Link>
+                )}
 
                 <button
                   onClick={() => {
@@ -189,17 +328,22 @@ const Nav = ({ user }: { user: userI }) => {
               }}
               className="fixed top-24 left-1/2 -translate-x-1/2 w-[90%] bg-white rounded-full shadow-lg z-40 flex items-center px-4 py-2"
             >
-                <Search className = "text-gray-500 w-5 h-5 mr-2"/>
-                <form className="grow">
-                    <input placeholder="Search groceries" className="w-full outline-0 text-gray-700" type="text" />
-                </form>
-                <button onClick={() => setSearchOpen(false)}>
-                    <X className="text-gray-500 w-5 h-5"/>
-                </button>
+              <Search className="text-gray-500 w-5 h-5 mr-2" />
+              <form className="grow">
+                <input
+                  placeholder="Search groceries"
+                  className="w-full outline-0 text-gray-700"
+                  type="text"
+                />
+              </form>
+              <button onClick={() => setSearchOpen(false)}>
+                <X className="text-gray-500 w-5 h-5" />
+              </button>
             </motion.div>
           )}
         </AnimatePresence>
       </div>
+      {sideBar}
     </div>
   );
 };
