@@ -96,7 +96,7 @@ const Hero = () => {
 
       <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-3">
          {slides.map((_, i) => (
-            <button className= {`w-3 h-3 rounded-full transition-all ${
+            <button key={i} className= {`w-3 h-3 rounded-full transition-all ${
                 i == currentSlide ? "bg-white w-6" : "bg-white/50"
             }`}/>
          ))}
