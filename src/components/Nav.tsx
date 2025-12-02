@@ -188,7 +188,7 @@ const Nav = ({ user }: { user: userI }) => {
             <div className="hidden md:flex items-center gap-4">
               <Link
                 className="flex items-center gap-2 bg-white text-green-700 font-semibold px-4 py-2 rounded-full hover:bg-green-100 transition-all"
-                href={""}
+                href={"/admin/add-grocery"}
               >
                 <Plus className="w-5 h-5" />
                 Add Grocery
