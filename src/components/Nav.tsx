@@ -84,7 +84,7 @@ const Nav = ({ user }: { user: userI }) => {
             </div>
 
             <div className="flex items-center gap-3 p-3 mt-3 rounded-xl bg-white/10 hover:bg-white/150 transition-all shadow-inner">
-              <div className="relative w-12 h-12 rounded-full overflow-hidden border-2">
+              <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 items-center justify-center flex">
                 {user.image ? (
                   <Image
                     className="object-cover rounded-full"

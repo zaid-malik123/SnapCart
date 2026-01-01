@@ -33,6 +33,7 @@ const Login = () => {
     await signIn("credentials", {
       email,
       password,
+      redirect: false
 
     })
     router.push("/")

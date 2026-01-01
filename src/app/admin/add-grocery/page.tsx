@@ -56,6 +56,12 @@ const AddGrocery = () => {
 
     const res = await axios.post("/api/admin/add-grocery", formData)
     setLoading(false)
+    setName("")
+    setCategory("")
+    setUnit("")
+    setPrice("")
+    setFrontendImage(null)
+    setBackendImage(null)
   } catch (error) {
     setLoading(false)
     console.log(error)
