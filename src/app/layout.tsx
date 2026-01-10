@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Provider from "@/Provider";
+import StoreProvider from "@/redux/StoreProvider";
 
 export const metadata: Metadata = {
   title: "Snapcart | 10 minutes grocery Delivery App",
@@ -16,7 +17,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="w-full min-h-screen bg-linear-to-b from-green-50 to-white">
-        <Provider>{children}</Provider>
+        <Provider>
+        <StoreProvider>     
+          {children}
+        </StoreProvider>  
+        </Provider>
       </body>
     </html>
   );

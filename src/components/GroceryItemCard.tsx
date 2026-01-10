@@ -21,7 +21,7 @@ const GroceryItemCard = ({ item }: { item: groceryI }) => {
       initial={{ opacity: 0, y: 50, scale: 0.9 }}
       whileInView={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ duration: 0.6 }}
-      viewport={{ once: false, amount: 0.5 }}
+      viewport={{ once: false, amount: 0.3 }}
       className="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 flex flex-col"
     >
       <div className="relative w-full aspect-4/3 bg-gray-50 overflow-hidden group">
@@ -43,7 +43,7 @@ const GroceryItemCard = ({ item }: { item: groceryI }) => {
           <span className="text-xs font-medium text-gray-600 bg-gray-100 px-2 py-1 rounded-full">
             {item.unit}
           </span>
-          <span className="text-green-700 font-bold text-lg">{item.price}</span>
+          <span className="text-green-700 font-bold text-lg"> ₹{item.price}</span>
         </div>
 
         <motion.button
