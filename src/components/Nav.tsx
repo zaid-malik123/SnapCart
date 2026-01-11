@@ -16,6 +16,8 @@ import { Boxes } from "lucide-react";
 import { ClipboardCheck } from "lucide-react";
 import { createPortal } from "react-dom";
 import { Menu } from "lucide-react";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
 
 interface userI {
   _id?: mongoose.Types.ObjectId;
@@ -34,6 +36,7 @@ const Nav = ({ user }: { user: userI }) => {
   const [searchBarOpen, setSearchOpen] = useState(false);
   const profileDropDown = useRef<HTMLDivElement>(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const {cartData} = useSelector((state:RootState) => state.cartSlice)
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -177,7 +180,7 @@ const Nav = ({ user }: { user: userI }) => {
             >
               <ShoppingCartIcon />
               <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full font-semibold shadow">
-                0
+                {cartData.length}
               </span>
             </Link>
           </>

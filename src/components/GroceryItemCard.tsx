@@ -1,8 +1,11 @@
 "use client";
+import { addToCart } from "@/redux/features/cartSlice";
+import { AppDispatch } from "@/redux/store";
 import { ShoppingCart } from "lucide-react";
 import mongoose from "mongoose";
 import { motion } from "motion/react";
 import Image from "next/image";
+import { useDispatch } from "react-redux";
 
 interface groceryI {
   id?: mongoose.Types.ObjectId;
@@ -16,6 +19,7 @@ interface groceryI {
 }
 
 const GroceryItemCard = ({ item }: { item: groceryI }) => {
+  const dispatch = useDispatch<AppDispatch>()
   return (
     <motion.div
       initial={{ opacity: 0, y: 50, scale: 0.9 }}
@@ -47,6 +51,7 @@ const GroceryItemCard = ({ item }: { item: groceryI }) => {
         </div>
 
         <motion.button
+          onClick={() => dispatch(addToCart({...item, quantity: 1}))}
           whileTap={{
             scale: 0.96,
           }}
