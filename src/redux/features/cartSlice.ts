@@ -27,9 +27,28 @@ export const cartSlice = createSlice({
   reducers: {
     addToCart: (state, action:PayloadAction<groceryI>) => {
         state.cartData.push(action.payload)
+    },
+    increaseQuantity: (state, action:PayloadAction<mongoose.Types.ObjectId>) => {
+        const item = state.cartData.find(i => i._id == action.payload)
+
+        if(item) {
+          item.quantity += 1
+        }
+
+    },
+    decreaseQuantity: (state, action:PayloadAction<mongoose.Types.ObjectId>) => {
+        const item = state.cartData.find(i => i._id == action.payload)
+
+        if(item?.quantity && item.quantity > 1) {
+          item.quantity -= 1
+        }
+
+        else {
+          state.cartData = state.cartData.filter((item) => item._id != action.payload)
+        }
     }
   },
 })
 
-export const { addToCart } = cartSlice.actions
+export const { addToCart, increaseQuantity, decreaseQuantity } = cartSlice.actions
 export default cartSlice.reducer

@@ -1,5 +1,5 @@
 "use client";
-import { addToCart } from "@/redux/features/cartSlice";
+import { addToCart, decreaseQuantity, increaseQuantity } from "@/redux/features/cartSlice";
 import { AppDispatch, RootState } from "@/redux/store";
 import { Minus } from "lucide-react";
 import { Plus } from "lucide-react";
@@ -10,7 +10,7 @@ import Image from "next/image";
 import { useDispatch, useSelector } from "react-redux";
 
 interface groceryI {
-  _id?: mongoose.Types.ObjectId;
+  _id: mongoose.Types.ObjectId;
   name: string;
   category: string;
   price: string;
@@ -71,9 +71,9 @@ const GroceryItemCard = ({ item }: { item: groceryI }) => {
         transition={{duration: 0.3}}
         className="mt-4 flex items-center justify-center bg-green-50 border border-green-200 rounded-full px-4 py-2 gap-4"
         >
-          <button className="w-7 h-7 flex items-center justify-center rounded-full bg-green-100 hover:bg-green-200 transition-all"><Minus size={16} className="text-green-700"/></button>
+          <button onClick={() => dispatch(decreaseQuantity(item._id))} className="w-7 h-7 flex items-center justify-center rounded-full bg-green-100 hover:bg-green-200 transition-all"><Minus size={16} className="text-green-700"/></button>
           <span className="text-sm font-semibold text-gray-800">{cartItem.quantity}</span>
-          <button  className="w-7 h-7 flex items-center justify-center rounded-full bg-green-100 hover:bg-green-200 transition-all"><Plus size={16} className="text-green-700"/></button>
+          <button onClick={() => dispatch(increaseQuantity(item._id))} className="w-7 h-7 flex items-center justify-center rounded-full bg-green-100 hover:bg-green-200 transition-all"><Plus size={16} className="text-green-700"/></button>
         </motion.div>
 
         }
