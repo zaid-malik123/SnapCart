@@ -13,7 +13,8 @@ import { decreaseQuantity, increaseQuantity, removeItem } from "@/redux/features
 import { Trash2 } from "lucide-react";
 
 const CartPage = () => {
-  const { cartData } = useSelector((state: RootState) => state.cartSlice);
+  const { cartData, subTotal, deliveryFee, finalTotal } = useSelector((state: RootState) => state.cartSlice);
+  console.log(subTotal)
   const dispatch = useDispatch<AppDispatch>();
   return (
     <div className="w-[95%] sm:w-[90%] md:w-[80%] mx-auto mt-8 mb-24 relative">
@@ -104,6 +105,36 @@ const CartPage = () => {
               ))}
             </AnimatePresence>
           </div>
+
+          <motion.div
+          initial={{opacity: 0, x: 30 }}
+          animate={{opacity: 1, x: 0}}
+          transition={{duration: 0.3}}
+          className="bg-white rounded-2xl shodow-xl p-6 h-fit sticky top-24 border border-gray-100 flex flex-col"
+          >
+            <h2 className="text-lg sm:text-xl font-bold text-gray-800 mb-4">Order Summary</h2>
+            <div className="space-y-3 text-gray-700 text-sm sm:text-base">
+                <div className="flex justify-between">
+                    <span>Subtotal</span>
+                    <span className="text-green-700">₹{subTotal}</span>
+                </div>
+                 <div className="flex justify-between">
+                    <span>Delivery Fee</span>
+                    <span className="text-green-700">₹{deliveryFee}</span>
+                </div>
+                <hr className="my-3" />
+                 <div className="flex justify-between font-bold text-lg">
+                    <span>Final Total</span>
+                    <span className="text-green-700">₹{finalTotal}</span>
+                </div>
+            </div>
+            <motion.button
+            whileTap={{scale:0.95}}
+            className="w-full mt-6 bg-green-600 text-white py-3 rounded-full hover:bg-green-700 transition-all font-semibold text-sm sm:text-base"
+            >
+                Proceed to CheckOut
+            </motion.button>
+          </motion.div>
         </motion.div>
       )}
     </div>

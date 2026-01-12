@@ -14,11 +14,17 @@ interface groceryI {
 }
 
 interface cartState {
-  cartData: groceryI[]
+  cartData: groceryI[],
+  subTotal: number,
+  deliveryFee: number,
+  finalTotal: number
 }
 
 const initialState: cartState = {
-    cartData: []
+    cartData: [],
+    subTotal: 0,
+    deliveryFee: 40,
+    finalTotal: 40
 }
 
 export const cartSlice = createSlice({
@@ -27,6 +33,7 @@ export const cartSlice = createSlice({
   reducers: {
     addToCart: (state, action:PayloadAction<groceryI>) => {
         state.cartData.push(action.payload)
+        cartSlice.caseReducers.calculateTotal(state)
     },
     increaseQuantity: (state, action:PayloadAction<mongoose.Types.ObjectId>) => {
         const item = state.cartData.find(i => i._id == action.payload)
@@ -34,6 +41,7 @@ export const cartSlice = createSlice({
         if(item) {
           item.quantity += 1
         }
+        cartSlice.caseReducers.calculateTotal(state)
 
     },
     decreaseQuantity: (state, action:PayloadAction<mongoose.Types.ObjectId>) => {
@@ -46,16 +54,25 @@ export const cartSlice = createSlice({
         else {
           state.cartData = state.cartData.filter((item) => item._id != action.payload)
         }
+        cartSlice.caseReducers.calculateTotal(state)
+
     },
 
     removeItem: (state, action: PayloadAction <mongoose.Types.ObjectId>) => {
       
       state.cartData =  state.cartData.filter(item => item._id != action.payload)
+      cartSlice.caseReducers.calculateTotal(state)
       
+    },
+
+    calculateTotal: (state) => {
+      state.subTotal = state.cartData.reduce((sum, item) => sum + Number(item.price) * item.quantity ,0)
+      state.deliveryFee = state.subTotal > 100 ? 0 : 40
+      state.finalTotal = state.subTotal + state.deliveryFee
     }
 
   },
 })
 
-export const { addToCart, increaseQuantity, decreaseQuantity, removeItem } = cartSlice.actions
+export const { addToCart, increaseQuantity, decreaseQuantity, removeItem, calculateTotal } = cartSlice.actions
 export default cartSlice.reducer
