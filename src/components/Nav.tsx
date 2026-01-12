@@ -176,7 +176,7 @@ const Nav = ({ user }: { user: userI }) => {
 
             <Link
               className="flex items-center justify-center shadow-md hover:scale-105 transition relative bg-white rounded-full w-11 h-11"
-              href={""}
+              href={"/user/cart"}
             >
               <ShoppingCartIcon />
               <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full font-semibold shadow">

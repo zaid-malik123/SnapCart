@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import mongoose from 'mongoose';
 
 interface groceryI {
-  _id?: mongoose.Types.ObjectId;
+  _id: mongoose.Types.ObjectId;
   name: string;
   category: string;
   price: string;
@@ -46,9 +46,16 @@ export const cartSlice = createSlice({
         else {
           state.cartData = state.cartData.filter((item) => item._id != action.payload)
         }
+    },
+
+    removeItem: (state, action: PayloadAction <mongoose.Types.ObjectId>) => {
+      
+      state.cartData =  state.cartData.filter(item => item._id != action.payload)
+      
     }
+
   },
 })
 
-export const { addToCart, increaseQuantity, decreaseQuantity } = cartSlice.actions
+export const { addToCart, increaseQuantity, decreaseQuantity, removeItem } = cartSlice.actions
 export default cartSlice.reducer
