@@ -1,16 +1,12 @@
 "use client";
 import { Leaf } from "lucide-react";
-import { User } from "lucide-react";
 import { Lock } from "lucide-react";
 import { EyeIcon } from "lucide-react";
-import { LogIn } from "lucide-react";
 import { EyeOff } from "lucide-react";
 import { Mail } from "lucide-react";
-import { ArrowLeft } from "lucide-react";
 import { motion } from "motion/react";
 import { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
-import axios from "axios";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { signIn, useSession } from "next-auth/react";
