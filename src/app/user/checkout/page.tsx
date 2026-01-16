@@ -1,7 +1,7 @@
 "use client";
 
-import MapView from "@/components/MapView";
 import { RootState } from "@/redux/store";
+import L, { LatLngExpression } from "leaflet";
 import { MapPin } from "lucide-react";
 import { User } from "lucide-react";
 import { Phone } from "lucide-react";
@@ -13,7 +13,16 @@ import { ArrowLeft } from "lucide-react";
 import { motion } from "motion/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { MapContainer, Marker, TileLayer, useMap } from "react-leaflet";
 import { useSelector } from "react-redux";
+import "leaflet/dist/leaflet.css";
+
+const markerIcon = new L.Icon({
+  iconUrl: "https://cdn-icons-png.flaticon.com/128/684/684908.png",
+  iconSize: [40, 40],
+  iconAnchor: [20, 40],
+});
+
 const CheckOut = () => {
   const router = useRouter();
   const { user } = useSelector((state: RootState) => state.userSlice);
@@ -29,21 +38,23 @@ const CheckOut = () => {
   const [position, setPosition] = useState<[number, number] | null>(null);
 
   useEffect(() => {
-  if (!navigator.geolocation) {
-    console.log("Geolocation not supported");
-    return;
-  }
-
-  navigator.geolocation.getCurrentPosition(
-    (pos) => {
-      const { latitude, longitude } = pos.coords;
-      setPosition([latitude, longitude]);
-    },
-    (err) => {
-      console.log("Location Error:", err.message);
+    if (!navigator.geolocation) {
+      console.log("Geolocation not supported");
+      return;
     }
-  );
-}, []);
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const { latitude, longitude } = pos.coords;
+        console.log("lat is :- ", latitude, "long is :- ", longitude);
+        setPosition([latitude, longitude]);
+      },
+      (err) => {
+        console.log("Location Error:", err.message);
+      },
+      { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 }
+    );
+  }, []);
 
   useEffect(() => {
     if (user) {
@@ -51,6 +62,28 @@ const CheckOut = () => {
       setAddress((prev) => ({ ...prev, mobile: user.mobile || "" }));
     }
   }, [user]);
+
+  const DraggableMarker: React.FC = () => {
+    const map = useMap()
+
+    useEffect(() => {
+      map.setView(position as LatLngExpression, 15, {animate: true})
+    }, [position, map])
+    return (
+      <Marker
+        eventHandlers={{
+          dragend: (e: L.LeafletEvent) => {
+            const marker = e.target as L.Marker;
+            const { lat, lng } = marker.getLatLng();
+            setPosition([lat, lng]);
+          },
+        }}
+        draggable={true}
+        icon={markerIcon}
+        position={position as LatLngExpression}
+      />
+    );
+  };
 
   return (
     <div className="w-[92%] md:w-[80%] mx-auto py-10 relative">
@@ -93,7 +126,10 @@ const CheckOut = () => {
                 placeholder="Full Name"
                 value={address.fullName}
                 onChange={(e) =>
-                  setAddress((prev) => ({ ...prev, fullName: address.fullName}))
+                  setAddress((prev) => ({
+                    ...prev,
+                    fullName: address.fullName,
+                  }))
                 }
               />
             </div>
@@ -123,7 +159,10 @@ const CheckOut = () => {
                 placeholder="Full Address"
                 value={address.fullAddress}
                 onChange={(e) =>
-                  setAddress((prev) => ({ ...prev, fullAddress: address.fullAddress }))
+                  setAddress((prev) => ({
+                    ...prev,
+                    fullAddress: address.fullAddress,
+                  }))
                 }
               />
             </div>
@@ -170,7 +209,10 @@ const CheckOut = () => {
                   placeholder="Pincode"
                   value={address.pincode}
                   onChange={(e) =>
-                    setAddress((prev) => ({ ...prev, pincode: address.pincode }))
+                    setAddress((prev) => ({
+                      ...prev,
+                      pincode: address.pincode,
+                    }))
                   }
                 />
               </div>
@@ -188,7 +230,20 @@ const CheckOut = () => {
             </div>
 
             <div className="relative mt-6 h-[330px] rounded-xl overflow-hidden border border-gray-200 shadow-inner">
-                  <MapView position={position}/>
+              {position ? (
+                <MapContainer
+                  className="h-full w-full"
+                  center={position as LatLngExpression}
+                  zoom={13}
+                  scrollWheelZoom={false}
+                >
+                  <TileLayer
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                  />
+                  <DraggableMarker />
+                </MapContainer>
+              ) : null}
             </div>
           </div>
         </motion.div>
