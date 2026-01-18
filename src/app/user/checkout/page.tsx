@@ -17,6 +17,9 @@ import { MapContainer, Marker, TileLayer, useMap } from "react-leaflet";
 import { useSelector } from "react-redux";
 import "leaflet/dist/leaflet.css";
 import axios from "axios";
+import { OpenStreetMapProvider } from "leaflet-geosearch";
+import { LocateFixed } from "lucide-react";
+import { Loader2 } from "lucide-react";
 
 const markerIcon = new L.Icon({
   iconUrl: "https://cdn-icons-png.flaticon.com/128/684/684908.png",
@@ -37,6 +40,8 @@ const CheckOut = () => {
   });
 
   const [position, setPosition] = useState<[number, number] | null>(null);
+  const [searchQuery, setSearchQuery] = useState("")
+  const [searchLoading, setSearchLoading] = useState(false)
 
   useEffect(() => {
     if (!navigator.geolocation) {
@@ -101,6 +106,36 @@ const CheckOut = () => {
     fetchAddress()
   } ,[position])
 
+  const handleSearchQuery = async () => {
+    setSearchLoading(true)
+    const provider = new OpenStreetMapProvider()
+
+    const results = await provider.search({query: searchQuery})
+
+    if(results) {
+      setPosition([results[0].y, results[0].x])
+      setSearchLoading(false)
+    }
+  }
+
+  const handleGetCurrentLocation =  () => {
+    if (!navigator.geolocation) {
+      console.log("Geolocation not supported");
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const { latitude, longitude } = pos.coords;
+        console.log("lat is :- ", latitude, "long is :- ", longitude);
+        setPosition([latitude, longitude]);
+      },
+      (err) => {
+        console.log("Location Error:", err.message);
+      },
+      { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 }
+    );
+  }
   return (
     <div className="w-[92%] md:w-[80%] mx-auto py-10 relative">
       <motion.button
@@ -144,7 +179,7 @@ const CheckOut = () => {
                 onChange={(e) =>
                   setAddress((prev) => ({
                     ...prev,
-                    fullName: address.fullName,
+                    fullName: e.target.value,
                   }))
                 }
               />
@@ -160,7 +195,7 @@ const CheckOut = () => {
                 placeholder="Mobile"
                 value={address.mobile}
                 onChange={(e) =>
-                  setAddress((prev) => ({ ...prev, mobile: address.mobile }))
+                  setAddress((prev) => ({ ...prev, mobile: e.target.value }))
                 }
               />
             </div>
@@ -177,7 +212,7 @@ const CheckOut = () => {
                 onChange={(e) =>
                   setAddress((prev) => ({
                     ...prev,
-                    fullAddress: address.fullAddress,
+                    fullAddress: e.target.value,
                   }))
                 }
               />
@@ -195,7 +230,7 @@ const CheckOut = () => {
                   placeholder="City"
                   value={address.city}
                   onChange={(e) =>
-                    setAddress((prev) => ({ ...prev, city: address.city }))
+                    setAddress((prev) => ({ ...prev, city: e.target.value }))
                   }
                 />
               </div>
@@ -210,7 +245,7 @@ const CheckOut = () => {
                   placeholder="State"
                   value={address.state}
                   onChange={(e) =>
-                    setAddress((prev) => ({ ...prev, state: address.state }))
+                    setAddress((prev) => ({ ...prev, state: e.target.value }))
                   }
                 />
               </div>
@@ -227,7 +262,7 @@ const CheckOut = () => {
                   onChange={(e) =>
                     setAddress((prev) => ({
                       ...prev,
-                      pincode: address.pincode,
+                      pincode: e.target.value,
                     }))
                   }
                 />
@@ -236,12 +271,14 @@ const CheckOut = () => {
 
             <div className="flex gap-2 mt-3">
               <input
+                onChange={(e) => setSearchQuery(e.target.value)}
+                value={searchQuery}
                 className="flex-1 border rounded-lg p-3 text-sm focus:ring-2 focus:ring-green-500 outline-none"
                 placeholder="Search City or area..."
                 type="text"
               />
-              <button className="bg-green-600 text-white px-5 rounded-lg hover:bg-green-700 transition-all font-medium">
-                Search
+              <button onClick={handleSearchQuery} className="bg-green-600 text-white px-5 rounded-lg hover:bg-green-700 transition-all font-medium">
+                {searchLoading ? <Loader2 className="animate-spin" size={16}/> : "Search"}
               </button>
             </div>
 
@@ -260,6 +297,14 @@ const CheckOut = () => {
                   <DraggableMarker />
                 </MapContainer>
               ) : null}
+
+              <motion.button
+              onClick={handleGetCurrentLocation}
+              whileTap={{scale: 0.97}}
+              className="absolute bottom-4 right-4 bg-green-600 text-white shadow-lg rounded-full p-3 hover:bg-green-700 transition-all flex items-center justify-center z-999"
+              >
+                <LocateFixed size={22}/>
+              </motion.button>
             </div>
           </div>
         </motion.div>
