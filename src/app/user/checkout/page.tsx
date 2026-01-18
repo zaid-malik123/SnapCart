@@ -20,6 +20,9 @@ import axios from "axios";
 import { OpenStreetMapProvider } from "leaflet-geosearch";
 import { LocateFixed } from "lucide-react";
 import { Loader2 } from "lucide-react";
+import { CreditCard } from "lucide-react";
+import { CreditCardIcon } from "lucide-react";
+import { Truck } from "lucide-react";
 
 const markerIcon = new L.Icon({
   iconUrl: "https://cdn-icons-png.flaticon.com/128/684/684908.png",
@@ -30,6 +33,8 @@ const markerIcon = new L.Icon({
 const CheckOut = () => {
   const router = useRouter();
   const { user } = useSelector((state: RootState) => state.userSlice);
+  const { subTotal, deliveryFee, finalTotal } = useSelector((state: RootState) => state.cartSlice);
+
   const [address, setAddress] = useState({
     fullName: "",
     mobile: "",
@@ -40,8 +45,10 @@ const CheckOut = () => {
   });
 
   const [position, setPosition] = useState<[number, number] | null>(null);
-  const [searchQuery, setSearchQuery] = useState("")
-  const [searchLoading, setSearchLoading] = useState(false)
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchLoading, setSearchLoading] = useState(false);
+
+  const [paymentMethod, setPaymentMethod] = useState<"cod" | "online">("cod");
 
   useEffect(() => {
     if (!navigator.geolocation) {
@@ -58,7 +65,7 @@ const CheckOut = () => {
       (err) => {
         console.log("Location Error:", err.message);
       },
-      { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 }
+      { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 },
     );
   }, []);
 
@@ -70,11 +77,11 @@ const CheckOut = () => {
   }, [user]);
 
   const DraggableMarker: React.FC = () => {
-    const map = useMap()
+    const map = useMap();
 
     useEffect(() => {
-      map.setView(position as LatLngExpression, 15, {animate: true})
-    }, [position, map])
+      map.setView(position as LatLngExpression, 15, { animate: true });
+    }, [position, map]);
     return (
       <Marker
         eventHandlers={{
@@ -93,32 +100,38 @@ const CheckOut = () => {
 
   useEffect(() => {
     const fetchAddress = async () => {
-      if(!position) return
+      if (!position) return;
       try {
-        const res = await axios.get(`https://nominatim.openstreetmap.org/reverse?lat=${position[0]}&lon=${position[1]}&format=jsonv2`)
-        console.log(res.data)
+        const res = await axios.get(
+          `https://nominatim.openstreetmap.org/reverse?lat=${position[0]}&lon=${position[1]}&format=jsonv2`,
+        );
+        console.log(res.data);
 
-        setAddress(prev => ({...prev, city: res.data.address.city, state: res.data.address.state, pincode: res.data.address.postcode, fullAddress: res.data.display_name}))
-      } catch (error) {
-        
-      }
-    }
-    fetchAddress()
-  } ,[position])
+        setAddress((prev) => ({
+          ...prev,
+          city: res.data.address.city,
+          state: res.data.address.state,
+          pincode: res.data.address.postcode,
+          fullAddress: res.data.display_name,
+        }));
+      } catch (error) {}
+    };
+    fetchAddress();
+  }, [position]);
 
   const handleSearchQuery = async () => {
-    setSearchLoading(true)
-    const provider = new OpenStreetMapProvider()
+    setSearchLoading(true);
+    const provider = new OpenStreetMapProvider();
 
-    const results = await provider.search({query: searchQuery})
+    const results = await provider.search({ query: searchQuery });
 
-    if(results) {
-      setPosition([results[0].y, results[0].x])
-      setSearchLoading(false)
+    if (results) {
+      setPosition([results[0].y, results[0].x]);
+      setSearchLoading(false);
     }
-  }
+  };
 
-  const handleGetCurrentLocation =  () => {
+  const handleGetCurrentLocation = () => {
     if (!navigator.geolocation) {
       console.log("Geolocation not supported");
       return;
@@ -133,9 +146,9 @@ const CheckOut = () => {
       (err) => {
         console.log("Location Error:", err.message);
       },
-      { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 }
+      { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 },
     );
-  }
+  };
   return (
     <div className="w-[92%] md:w-[80%] mx-auto py-10 relative">
       <motion.button
@@ -277,8 +290,15 @@ const CheckOut = () => {
                 placeholder="Search City or area..."
                 type="text"
               />
-              <button onClick={handleSearchQuery} className="bg-green-600 text-white px-5 rounded-lg hover:bg-green-700 transition-all font-medium">
-                {searchLoading ? <Loader2 className="animate-spin" size={16}/> : "Search"}
+              <button
+                onClick={handleSearchQuery}
+                className="bg-green-600 text-white px-5 rounded-lg hover:bg-green-700 transition-all font-medium"
+              >
+                {searchLoading ? (
+                  <Loader2 className="animate-spin" size={16} />
+                ) : (
+                  "Search"
+                )}
               </button>
             </div>
 
@@ -299,13 +319,51 @@ const CheckOut = () => {
               ) : null}
 
               <motion.button
-              onClick={handleGetCurrentLocation}
-              whileTap={{scale: 0.97}}
-              className="absolute bottom-4 right-4 bg-green-600 text-white shadow-lg rounded-full p-3 hover:bg-green-700 transition-all flex items-center justify-center z-999"
+                onClick={handleGetCurrentLocation}
+                whileTap={{ scale: 0.97 }}
+                className="absolute bottom-4 right-4 bg-green-600 text-white shadow-lg rounded-full p-3 hover:bg-green-700 transition-all flex items-center justify-center z-999"
               >
-                <LocateFixed size={22}/>
+                <LocateFixed size={22} />
               </motion.button>
             </div>
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.3 }}
+          className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 border border-gray-100 h-fit"
+        >
+          <h1 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+            <CreditCard className="text-green-600" />
+            Payment Method
+          </h1>
+          <div className="space-y-4 mb-6">
+            <button
+              onClick={() => setPaymentMethod("online")}
+              className={`flex items-center gap-3 w-full border rounded-lg p-3 transition-all ${
+                paymentMethod === "online"
+                  ? "border-green-600 bg-green-50 shadow-md"
+                  : "hover:bg-green-50"
+              }`}
+            >
+              <CreditCardIcon className="text-green-600" />
+              <span className="font-medium text-gray-700">Pay Online</span>
+            </button>
+            <button
+            onClick={() => setPaymentMethod("cod")}
+              className={`flex items-center gap-3 w-full border rounded-lg p-3 transition-all ${
+                paymentMethod === "cod"
+                  ? "border-green-600 bg-green-50 shadow-md"
+                  : "hover:bg-green-50"
+              }`}
+            >
+              <Truck className="text-green-600" />
+              <span className="font-medium text-gray-700">
+                Cash On Delivery
+              </span>
+            </button>
           </div>
         </motion.div>
       </div>
