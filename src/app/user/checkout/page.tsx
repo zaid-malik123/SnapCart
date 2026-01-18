@@ -365,6 +365,23 @@ const CheckOut = () => {
               </span>
             </button>
           </div>
+          <div className="border-t pt-4 text-gray-700 space-y-2 text-sm sm:text-base">
+            <div className="flex justify-between">
+              <span className="font-semibold">Subtotal</span>
+              <span className="font-semibold text-green-600">₹{subTotal}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="font-semibold">Delivery Fee</span>
+              <span className="font-semibold text-green-600">₹{deliveryFee}</span>
+            </div>
+            <div className="flex justify-between border-t pt-3">
+              <span className="font-bold text-black text-lg ">Final Total</span>
+              <span className="font-semibold text-green-600">₹{finalTotal}</span>
+            </div>
+            <motion.button className="w-full mt-6 bg-green-600 text-white py-3 rounded-full hover:bg-green-700 transition-all font-semibold" whileTap={{scale: 0.93}}>
+              {paymentMethod === "cod" ? "Place Order" : "Pay & Place Order"}
+            </motion.button>
+          </div>
         </motion.div>
       </div>
     </div>
