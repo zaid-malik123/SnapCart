@@ -33,7 +33,9 @@ const markerIcon = new L.Icon({
 const CheckOut = () => {
   const router = useRouter();
   const { user } = useSelector((state: RootState) => state.userSlice);
-  const { subTotal, deliveryFee, finalTotal } = useSelector((state: RootState) => state.cartSlice);
+  const { subTotal, deliveryFee, finalTotal, cartData } = useSelector(
+    (state: RootState) => state.cartSlice,
+  );
 
   const [address, setAddress] = useState({
     fullName: "",
@@ -149,6 +151,42 @@ const CheckOut = () => {
       { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 },
     );
   };
+
+  const handleCodOrder = async () => {
+    if(!position) return null
+    try {
+      const res = await axios.post("/api/user/order", {
+        userId: user?._id,
+        items: cartData.map((item) => (
+          {
+            grocery: item._id,
+            name: item.name,
+            price: item.price,
+            unit: item.unit,
+            quantity: item.quantity,
+            image: item.image
+          }
+        )),
+        totatAmount: finalTotal,
+        address: {
+          fullName: address.fullName,
+          mobile: address.mobile,
+          city: address.city,
+          state: address.state,
+          fullAddress: address.fullAddress,
+          pincode: address.pincode,
+          latitude: position[0],
+          longitude: position[1]
+        },
+        paymentMethod
+      })
+      console.log(res.data)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const handleOnlineOrder = async () => {}
   return (
     <div className="w-[92%] md:w-[80%] mx-auto py-10 relative">
       <motion.button
@@ -352,7 +390,7 @@ const CheckOut = () => {
               <span className="font-medium text-gray-700">Pay Online</span>
             </button>
             <button
-            onClick={() => setPaymentMethod("cod")}
+              onClick={() => setPaymentMethod("cod")}
               className={`flex items-center gap-3 w-full border rounded-lg p-3 transition-all ${
                 paymentMethod === "cod"
                   ? "border-green-600 bg-green-50 shadow-md"
@@ -372,13 +410,23 @@ const CheckOut = () => {
             </div>
             <div className="flex justify-between">
               <span className="font-semibold">Delivery Fee</span>
-              <span className="font-semibold text-green-600">₹{deliveryFee}</span>
+              <span className="font-semibold text-green-600">
+                ₹{deliveryFee}
+              </span>
             </div>
             <div className="flex justify-between border-t pt-3">
               <span className="font-bold text-black text-lg ">Final Total</span>
-              <span className="font-semibold text-green-600">₹{finalTotal}</span>
+              <span className="font-semibold text-green-600">
+                ₹{finalTotal}
+              </span>
             </div>
-            <motion.button className="w-full mt-6 bg-green-600 text-white py-3 rounded-full hover:bg-green-700 transition-all font-semibold" whileTap={{scale: 0.93}}>
+            <motion.button
+              onClick={() =>
+                paymentMethod === "cod" ? handleCodOrder() : handleOnlineOrder()
+              }
+              whileTap={{ scale: 0.93 }}
+              className="w-full mt-6 bg-green-600 text-white py-3 rounded-full hover:bg-green-700 transition-all font-semibold"
+            >
               {paymentMethod === "cod" ? "Place Order" : "Pay & Place Order"}
             </motion.button>
           </div>
