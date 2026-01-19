@@ -13,7 +13,7 @@ interface orderI {
         quantity: number
     }
   ];
-  totalAmount: string;
+  totalAmount: number;
   paymentMethod: "cod" | "online";
   address: {
     fullName: string,
@@ -67,7 +67,7 @@ const orderSchema = new mongoose.Schema<orderI>({
         longitude: Number
     },
     totalAmount: {
-        type: String,
+        type: Number,
         required: true
     },
     status: {
