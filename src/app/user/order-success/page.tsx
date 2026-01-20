@@ -79,6 +79,21 @@ const OrderSuccess = () => {
           </motion.div>
         </Link>
       </motion.div>
+      <motion.div
+      initial={{opacity: 0}}
+      animate={{opacity: [0.2, 0.6, 0.2]}}
+      transition={{
+        duration: 3,
+        repeat: Infinity,
+        ease: "easeInOut"
+      }}
+      className="absoulte top-0 left-0 w-full h-full pointer-events-none"
+      >
+        <div className="absolute top-20 left-[10%] w-2 h-2 bg-green-400 rounded-full animate-bounce"/>
+        <div className="absolute top-32 left-[30%] w-2 h-2 bg-green-400 rounded-full animate-pulse"/>
+        <div className="absolute top-24 left-[50%] w-2 h-2 bg-green-400 rounded-full animate-bounce"/>
+        <div className="absolute top-16 left-[70%] w-2 h-2 bg-green-400 rounded-full animate-pulse"/>
+      </motion.div>
     </div>
   );
 };
