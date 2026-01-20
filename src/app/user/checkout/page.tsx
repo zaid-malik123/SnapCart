@@ -36,7 +36,6 @@ const CheckOut = () => {
   const { subTotal, deliveryFee, finalTotal, cartData } = useSelector(
     (state: RootState) => state.cartSlice,
   );
-
   const [address, setAddress] = useState({
     fullName: "",
     mobile: "",
@@ -107,7 +106,6 @@ const CheckOut = () => {
         const res = await axios.get(
           `https://nominatim.openstreetmap.org/reverse?lat=${position[0]}&lon=${position[1]}&format=jsonv2`,
         );
-        console.log(res.data);
 
         setAddress((prev) => ({
           ...prev,
@@ -167,7 +165,7 @@ const CheckOut = () => {
             image: item.image
           }
         )),
-        totatAmount: finalTotal,
+        totalAmount: finalTotal,
         address: {
           fullName: address.fullName,
           mobile: address.mobile,
@@ -180,7 +178,8 @@ const CheckOut = () => {
         },
         paymentMethod
       })
-      console.log(res.data)
+
+      router.push("/user/order-success")
     } catch (error) {
       console.log(error)
     }

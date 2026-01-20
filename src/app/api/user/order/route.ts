@@ -8,7 +8,6 @@ export async function POST(req: NextRequest) {
         await connectDb()
 
         const {userId, items, paymentMethod, address, totalAmount} = await req.json()
-
         if(!userId || !items || !paymentMethod || !address || !totalAmount){
             return NextResponse.json(
                 {message: "All fields are required"},
